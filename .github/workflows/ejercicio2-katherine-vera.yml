@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2 # Update to the latest version if available
+
       - name: Analizar el código
         run: echo "Realizando análisis de SAST"
       
