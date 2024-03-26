@@ -18,19 +18,19 @@ jobs:
         run: |
           if [ -f "allow_pull_request.txt" ]; then
             echo "Permitiendo Pull Request"
-            echo "::set-output name=allow_pull::true"
+            echo "allow_pull=true" >> $GITHUB_ENV
           else
             echo "Impidiendo Pull Request"
-            echo "::set-output name=allow_pull::false"
+            echo "allow_pull=false" >> $GITHUB_ENV
             exit 1
           fi
 
       - name: Permitir la build si allow_pull es True
-        if: steps.check_requirements.outputs.allow_pull == 'true'
+        if: env.allow_pull == 'true'
         run: echo "Permitiendo Pull Request"
 
       - name: Impedir la build si allow_pull es False
-        if: steps.check_requirements.outputs.allow_pull == 'false'
+        if: env.allow_pull == 'false'
         run: |
           echo "Build fallida. Impidiendo Pull Request"
           exit 1
