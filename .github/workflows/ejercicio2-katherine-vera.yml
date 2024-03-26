@@ -1,0 +1,43 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  pull_request_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Analizar el código
+        run: echo "Realizando análisis de SAST"
+      
+      - name: Comprobar requisitos
+        id: check_requirements
+        run: |
+          if [ -f "allow_pull_request.txt" ]; then
+            echo "Permitiendo Pull Request"
+            echo "::set-output name=allow_pull::true"
+          else
+            echo "Impidiendo Pull Request"
+            echo "::set-output name=allow_pull::false"
+            exit 1
+          fi
+
+      - name: Permitir la build si allow_pull es True
+        if: steps.check_requirements.outputs.allow_pull == 'true'
+        run: echo "Permitiendo Pull Request"
+
+      - name: Impedir la build si allow_pull es False
+        if: steps.check_requirements.outputs.allow_pull == 'false'
+        run: |
+          echo "Build fallida. Impidiendo Pull Request"
+          exit 1
+
+      - name: Guardar archivo generado como un artefacto
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: allow_pull_request.txt
+          path: allow_pull_request.txt
